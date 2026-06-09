@@ -6,13 +6,14 @@ import pytest
 
 from handlers.keyboards import main_menu
 from services import speech_service
+from services.openai_client import get_client
 
 
 class TestQaStage2Speech:
     def test_transcribe_requires_api_key(self, monkeypatch):
         monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         with pytest.raises(RuntimeError, match="OPENAI_API_KEY"):
-            speech_service._client()
+            get_client()
 
     async def test_transcribe_returns_text(self, monkeypatch, tmp_path):
         monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
@@ -26,7 +27,7 @@ class TestQaStage2Speech:
 
         fake_client = MagicMock()
         fake_client.audio = fake_audio
-        monkeypatch.setattr(speech_service, "_client", lambda: fake_client)
+        monkeypatch.setattr(speech_service, "get_client", lambda: fake_client)
 
         bot = AsyncMock()
         bot.get_file = AsyncMock(return_value=MagicMock(file_path="voice/file.ogg"))

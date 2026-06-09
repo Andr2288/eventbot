@@ -4,15 +4,10 @@ import os
 from pathlib import Path
 
 from aiogram import Bot
-from openai import AsyncOpenAI
 
-from utils.env import require
+from services.openai_client import get_client
 
 TMP_DIR = Path(__file__).resolve().parent.parent / "tmp"
-
-
-def _client() -> AsyncOpenAI:
-    return AsyncOpenAI(api_key=require("OPENAI_API_KEY"))
 
 
 async def transcribe_telegram_voice(bot: Bot, file_id: str) -> str:
@@ -26,7 +21,7 @@ async def transcribe_telegram_voice(bot: Bot, file_id: str) -> str:
     try:
         await bot.download_file(tg_file.file_path, tmp_path)
         with open(tmp_path, "rb") as audio:
-            result = await _client().audio.transcriptions.create(
+            result = await get_client().audio.transcriptions.create(
                 model="whisper-1",
                 file=audio,
                 language="uk",

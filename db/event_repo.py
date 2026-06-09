@@ -120,6 +120,17 @@ async def update_event_status(event_id: int, user_id: int, status: str) -> bool:
         return cursor.rowcount > 0
 
 
+async def get_events_history(user_id: int, limit: int = 30) -> list[dict]:
+    async with get_db() as db:
+        cursor = await db.execute(
+            """SELECT * FROM events WHERE user_id = ?
+               ORDER BY event_date DESC, event_time DESC LIMIT ?""",
+            (user_id, limit),
+        )
+        rows = await cursor.fetchall()
+        return _rows_to_events(rows)
+
+
 async def delete_all_events(user_id: int) -> int:
     async with get_db() as db:
         cursor = await db.execute("DELETE FROM events WHERE user_id = ?", (user_id,))

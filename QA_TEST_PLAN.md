@@ -10,6 +10,7 @@
 | 1 — Безпека | [qa/QA_STAGE1.md](qa/QA_STAGE1.md) |
 | 2 — Голос (OpenAI) | [qa/QA_STAGE2.md](qa/QA_STAGE2.md) |
 | 3 — Рекомендації (GPT) | [qa/QA_STAGE3.md](qa/QA_STAGE3.md) |
+| 4 — Статистика | [qa/QA_STAGE4.md](qa/QA_STAGE4.md) |
 
 ---
 

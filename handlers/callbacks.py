@@ -18,6 +18,7 @@ from handlers.keyboards import (
     events_list_keyboard, events_view_menu, main_menu,
     reminder_type_keyboard, skip_or_back, time_keyboard,
 )
+from handlers.ui import edit_or_answer
 from services.event_service import (
     add_reminder_for_event, create_event, delete_event,
     format_event, get_all_events, get_events_today, get_events_week,
@@ -70,7 +71,9 @@ class AddReminder(StatesGroup):
 @router.callback_query(F.data == "menu_main")
 async def cb_main_menu(cb: CallbackQuery, state: FSMContext) -> None:
     await state.clear()
-    await cb.message.edit_text("📋 Головне меню. Що хочеш зробити?", reply_markup=main_menu())
+    await edit_or_answer(
+        cb, "📋 Головне меню. Що хочеш зробити?", reply_markup=main_menu()
+    )
 
 
 # ── Перегляд подій ──────────────────────────────────────────
@@ -483,6 +486,7 @@ async def cb_help(cb: CallbackQuery) -> None:
         "• <b>Створити подію</b> — назва, дата, час (опц.), опис (опц.)\n"
         "• <b>Голосова подія</b> — назва голосом (OpenAI Whisper)\n"
         "• <b>Рекомендації</b> — поради за історією подій (OpenAI GPT)\n"
+        "• <b>Статистика</b> — графіки за тиждень і місяць\n"
         "• <b>Нагадування</b> — за 10хв / 1год / 1день / свій час\n"
         "• <b>Перегляд</b> — сьогодні / тиждень / всі майбутні\n"
         "• <b>Редагування</b> — зміна дати та часу події\n"

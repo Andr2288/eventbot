@@ -8,6 +8,6 @@
 | 1 | Безпека, шифрування, підтвердження дій | [QA_STAGE1.md](QA_STAGE1.md) | `tests/test_qa_stage1.py` |
 | 2 | Голосове управління (OpenAI Whisper) | [QA_STAGE2.md](QA_STAGE2.md) | `tests/test_qa_stage2.py` |
 | 3 | Рекомендації (OpenAI GPT) | [QA_STAGE3.md](QA_STAGE3.md) | `tests/test_qa_stage3.py` |
-| 4 | Візуалізація (графіки) | *очікується* | *очікується* |
+| 4 | Візуалізація (графіки) | [QA_STAGE4.md](QA_STAGE4.md) | `tests/test_qa_stage4.py` |
 
 **Загальний план усієї системи:** [QA_TEST_PLAN.md](../QA_TEST_PLAN.md)

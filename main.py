@@ -15,7 +15,7 @@ from utils.env import load_env
 load_env()
 
 from db.database import init_db
-from handlers import commands, callbacks, registration, settings
+from handlers import commands, callbacks, registration, settings, voice
 from middleware.auth import RegisteredUserMiddleware
 from scheduler.notifier import run_scheduler
 
@@ -46,6 +46,7 @@ async def main() -> None:
     dp.include_router(registration.router)
     dp.include_router(commands.router)
     dp.include_router(callbacks.router)
+    dp.include_router(voice.router)
     dp.include_router(settings.router)
 
     # Запуск планувальника нагадувань

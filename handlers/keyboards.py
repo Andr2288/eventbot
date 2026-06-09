@@ -10,6 +10,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 def main_menu() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(text="📅 Створити подію",    callback_data="event_create")
+    kb.button(text="🎤 Голосова подія",    callback_data="event_create_voice")
     kb.button(text="🔍 Переглянути події", callback_data="events_view")
     kb.button(text="✏️ Редагувати подію",  callback_data="event_edit_menu")
     kb.button(text="🗑 Видалити подію",    callback_data="event_delete_menu")

@@ -76,6 +76,7 @@ class TestQaStage0Ui:
         ]
 
         assert "settings_menu" in callbacks
+        assert "event_create_voice" in callbacks
 
     def test_settings_menu_has_back_button(self):
         markup = settings_menu()

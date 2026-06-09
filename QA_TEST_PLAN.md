@@ -8,6 +8,7 @@
 | ---- | -------- |
 | 0 — Підготовка | [qa/QA_STAGE0.md](qa/QA_STAGE0.md) |
 | 1 — Безпека | [qa/QA_STAGE1.md](qa/QA_STAGE1.md) |
+| 2 — Голос (OpenAI) | [qa/QA_STAGE2.md](qa/QA_STAGE2.md) |
 
 ---
 

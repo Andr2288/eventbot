@@ -36,6 +36,7 @@ async def init_db() -> None:
                 event_date  TEXT    NOT NULL,
                 event_time  TEXT    DEFAULT NULL,
                 description TEXT    DEFAULT NULL,
+                status      TEXT    DEFAULT 'pending',
                 created_at  TEXT    NOT NULL
             );
 
@@ -52,4 +53,15 @@ async def init_db() -> None:
             CREATE INDEX IF NOT EXISTS idx_reminders_event ON reminders(event_id);
             CREATE INDEX IF NOT EXISTS idx_reminders_sent ON reminders(sent, remind_at);
         """)
+        await _migrate_events_status(db)
         await db.commit()
+
+
+async def _migrate_events_status(db: aiosqlite.Connection) -> None:
+    """Додати колонку status до існуючих БД (без перестворення таблиці)."""
+    cursor = await db.execute("PRAGMA table_info(events)")
+    columns = {row[1] for row in await cursor.fetchall()}
+    if "status" not in columns:
+        await db.execute(
+            "ALTER TABLE events ADD COLUMN status TEXT DEFAULT 'pending'"
+        )

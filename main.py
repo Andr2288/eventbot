@@ -15,7 +15,8 @@ from utils.env import load_env
 load_env()
 
 from db.database import init_db
-from handlers import commands, callbacks, registration
+from handlers import commands, callbacks, registration, settings
+from middleware.auth import RegisteredUserMiddleware
 from scheduler.notifier import run_scheduler
 
 logging.basicConfig(
@@ -39,10 +40,13 @@ async def main() -> None:
     )
     storage = MemoryStorage()
     dp = Dispatcher(storage=storage)
+    dp.message.middleware(RegisteredUserMiddleware())
+    dp.callback_query.middleware(RegisteredUserMiddleware())
 
     dp.include_router(registration.router)
     dp.include_router(commands.router)
     dp.include_router(callbacks.router)
+    dp.include_router(settings.router)
 
     # Запуск планувальника нагадувань
     asyncio.create_task(run_scheduler(bot))

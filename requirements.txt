@@ -1,4 +1,8 @@
 aiogram>=3.13.1
 aiosqlite>=0.20.0
+cryptography>=43.0.0
+matplotlib>=3.9.0
+SpeechRecognition>=3.10.0
+pydub>=0.25.1
 pytest>=8.0.0
 pytest-asyncio>=0.24.0

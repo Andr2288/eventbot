@@ -40,3 +40,12 @@ async def get_users_count() -> int:
         cursor = await db.execute("SELECT COUNT(*) FROM users")
         row = await cursor.fetchone()
         return row[0] if row else 0
+
+
+async def delete_user(telegram_id: int) -> bool:
+    async with get_db() as db:
+        cursor = await db.execute(
+            "DELETE FROM users WHERE telegram_id = ?", (telegram_id,)
+        )
+        await db.commit()
+        return cursor.rowcount > 0

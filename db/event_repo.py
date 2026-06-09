@@ -1,7 +1,13 @@
 """Репозиторій подій."""
 
 from datetime import datetime, date
+
 from db.database import get_db
+from services.security_service import decrypt_event, encrypt_field
+
+
+def _rows_to_events(rows) -> list[dict]:
+    return [decrypt_event(dict(r)) for r in rows]
 
 
 async def add_event(
@@ -13,9 +19,16 @@ async def add_event(
 ) -> int:
     async with get_db() as db:
         cursor = await db.execute(
-            """INSERT INTO events (user_id, title, event_date, event_time, description, created_at)
-               VALUES (?, ?, ?, ?, ?, ?)""",
-            (user_id, title, event_date, event_time, description, datetime.now().isoformat()),
+            """INSERT INTO events (user_id, title, event_date, event_time, description, status, created_at)
+               VALUES (?, ?, ?, ?, ?, 'pending', ?)""",
+            (
+                user_id,
+                encrypt_field(title),
+                event_date,
+                event_time,
+                encrypt_field(description),
+                datetime.now().isoformat(),
+            ),
         )
         await db.commit()
         return cursor.lastrowid
@@ -28,7 +41,7 @@ async def get_events_by_day(user_id: int, day: str) -> list[dict]:
             (user_id, day),
         )
         rows = await cursor.fetchall()
-        return [dict(r) for r in rows]
+        return _rows_to_events(rows)
 
 
 async def get_events_by_week(user_id: int, start: str, end: str) -> list[dict]:
@@ -38,7 +51,7 @@ async def get_events_by_week(user_id: int, start: str, end: str) -> list[dict]:
             (user_id, start, end),
         )
         rows = await cursor.fetchall()
-        return [dict(r) for r in rows]
+        return _rows_to_events(rows)
 
 
 async def get_all_events(user_id: int) -> list[dict]:
@@ -49,7 +62,7 @@ async def get_all_events(user_id: int) -> list[dict]:
             (user_id, today),
         )
         rows = await cursor.fetchall()
-        return [dict(r) for r in rows]
+        return _rows_to_events(rows)
 
 
 async def get_event_by_id(event_id: int, user_id: int) -> dict | None:
@@ -59,7 +72,7 @@ async def get_event_by_id(event_id: int, user_id: int) -> dict | None:
             (event_id, user_id),
         )
         row = await cursor.fetchone()
-        return dict(row) if row else None
+        return decrypt_event(dict(row)) if row else None
 
 
 async def update_event(
@@ -74,7 +87,14 @@ async def update_event(
         cursor = await db.execute(
             """UPDATE events SET title=?, event_date=?, event_time=?, description=?
                WHERE id=? AND user_id=?""",
-            (title, event_date, event_time, description, event_id, user_id),
+            (
+                encrypt_field(title),
+                event_date,
+                event_time,
+                encrypt_field(description),
+                event_id,
+                user_id,
+            ),
         )
         await db.commit()
         return cursor.rowcount > 0
@@ -90,6 +110,23 @@ async def delete_event(event_id: int, user_id: int) -> bool:
         return cursor.rowcount > 0
 
 
+async def update_event_status(event_id: int, user_id: int, status: str) -> bool:
+    async with get_db() as db:
+        cursor = await db.execute(
+            "UPDATE events SET status = ? WHERE id = ? AND user_id = ?",
+            (status, event_id, user_id),
+        )
+        await db.commit()
+        return cursor.rowcount > 0
+
+
+async def delete_all_events(user_id: int) -> int:
+    async with get_db() as db:
+        cursor = await db.execute("DELETE FROM events WHERE user_id = ?", (user_id,))
+        await db.commit()
+        return cursor.rowcount
+
+
 async def get_upcoming_events_for_reminders() -> list[dict]:
     today = date.today().isoformat()
     async with get_db() as db:
@@ -98,4 +135,4 @@ async def get_upcoming_events_for_reminders() -> list[dict]:
             (today,),
         )
         rows = await cursor.fetchall()
-        return [dict(r) for r in rows]
+        return _rows_to_events(rows)

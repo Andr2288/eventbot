@@ -1,7 +1,9 @@
 """Репозиторій нагадувань."""
 
 from datetime import datetime
+
 from db.database import get_db
+from services.security_service import decrypt_field
 
 
 async def add_reminder(event_id: int, user_id: int, remind_at: datetime, reminder_type: str = "custom") -> int:
@@ -35,7 +37,20 @@ async def get_due_reminders(now: datetime) -> list[dict]:
             (now.isoformat(),),
         )
         rows = await cursor.fetchall()
-        return [dict(r) for r in rows]
+        result = []
+        for r in rows:
+            item = dict(r)
+            item["title"] = decrypt_field(item.get("title"))
+            item["description"] = decrypt_field(item.get("description"))
+            result.append(item)
+        return result
+
+
+async def delete_all_reminders(user_id: int) -> int:
+    async with get_db() as db:
+        cursor = await db.execute("DELETE FROM reminders WHERE user_id = ?", (user_id,))
+        await db.commit()
+        return cursor.rowcount
 
 
 async def mark_sent(reminder_id: int) -> None:

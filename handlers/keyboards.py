@@ -14,7 +14,18 @@ def main_menu() -> InlineKeyboardMarkup:
     kb.button(text="✏️ Редагувати подію",  callback_data="event_edit_menu")
     kb.button(text="🗑 Видалити подію",    callback_data="event_delete_menu")
     kb.button(text="🔔 Нагадування",       callback_data="reminders_menu")
+    kb.button(text="⚙️ Налаштування",    callback_data="settings_menu")
     kb.button(text="ℹ️ Довідка",           callback_data="help")
+    kb.adjust(1)
+    return kb.as_markup()
+
+
+def settings_menu() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+    kb.button(text="🗑 Видалити всі події",      callback_data="settings_del_events")
+    kb.button(text="🔕 Очистити нагадування",    callback_data="settings_clear_reminders")
+    kb.button(text="❌ Видалити акаунт",         callback_data="settings_del_account")
+    kb.button(text="◀️ Головне меню",            callback_data="menu_main")
     kb.adjust(1)
     return kb.as_markup()
 
